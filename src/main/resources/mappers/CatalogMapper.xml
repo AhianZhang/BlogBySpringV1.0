@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ahianzhang.dao.ICatalogDao">
+<resultMap type="Catalog" id ="CatalogResult">
+    <result property="id" column="id"></result>
+    <result property="cataname" column="cataname"></result>
+    <result property="orderNo" column="orderNo"></result>
+</resultMap>
+    <select id="listCatalog"  resultMap="CatalogResult">
+        SELECT t2.id,t2.cataname,COUNT(t1.id) AS blogCount FROM t_blog t1 RIGHT JOIN t_catalog  t2 ON t1.cataId=t2.id GROUP BY t2.cataname ORDER BY t2.orderNo;
+    </select>
+    <select id="findById"  parameterType="Integer" resultMap="CatalogResult">
+SELECT * FROM t_catalog WHERE id=#{id}
+    </select>
+    <select id="findAll" parameterType="Map"  resultMap="CatalogResult">
+        SELECT * FROM t_catalog
+        <if test="start!=null and size!=null">
+            LIMIT #{start},#{size}
+        </if>
+    </select>
+    <select id="getTotal" parameterType="Map"  resultType="Long">
+        SELECT count(*) FROM t_catalog
+    </select>
+    <insert id="add" parameterType="Catalog">
+        insert into t_catalog values(null,#{cataname},#{orderNo});
+    </insert>
+
+    <update id="update" parameterType="Catalog">
+        update t_catalog
+        <set>
+            <if test="cataname!=null and cataname!=''">
+                cataname=#{cataname},
+            </if>
+            <if test="orderNo!=null">
+                orderNo=#{orderNo},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="Integer">
+        delete from t_catalog where id=#{id}
+    </delete>
+</mapper>

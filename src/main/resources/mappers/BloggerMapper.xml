@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ahianzhang.dao.IBloggerDao">
+
+    <resultMap type="Blogger" id="BloggerResult">
+        <result property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="nickname" column="nickname"/>
+        <result property="sign" column="sign"/>
+        <result property="aboutme" column="aboutme"/>
+        <result property="imagename" column="imagename"/>
+    </resultMap>
+    <!--通过username获取当前博主信息-->
+<select id="getByUserName" parameterType="String" resultMap="BloggerResult">
+    SELECT * FROM t_blogger WHERE username=#{username}
+</select>
+    <select id="find" resultMap="BloggerResult">
+        SELECT * FROM t_blogger WHERE id=1
+    </select>
+<update id="updateInfo" parameterType="Blogger" >
+    UPDATE t_blogger
+   <set>
+     nickname=#{nickname},sign=#{sign},aboutme=#{aboutme},imagename=#{imagename}
+   </set>
+    WHERE id=1
+</update>
+    <update id="update" parameterType="Blogger" >
+        UPDATE t_blogger
+        <set>
+         password=#{password}
+        </set>
+        WHERE id=1
+    </update>
+</mapper>

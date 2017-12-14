@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ahianzhang.dao.IblogDAO">
+<resultMap type="Blog" id ="BlogResult">
+    <result property="id" column="id"></result>
+    <result property="title" column="title"></result>
+    <result property="summary" column="summary"></result>
+    <result property="releaseDate" column="releaseDate"></result>
+    <result property="clickHit" column="clickHit"></result>
+    <result property="replyHit" column="replyHit"></result>
+    <result property="content" column="content"></result>
+    <result property="tag" column="tag"></result>
+    <association property="catalog" column="cataId" select="top.ahianzhang.dao.ICatalogDao.findById"></association>
+
+</resultMap>
+    <select id="blogList"  resultMap="BlogResult">
+        SELECT DATE_FORMAT(releaseDate,'%Y年%m月') AS releaseDateStr,COUNT(*)AS blogCount FROM t_blog
+        GROUP BY releaseDateStr ORDER BY releaseDateStr DESC;
+
+    </select>
+    <select id="list"  parameterType="Map" resultMap="BlogResult">
+        SELECT * FROM t_blog
+        <where>
+            <if test="cataId!=null and cataId!=''">
+                AND cataId = #{cataId}
+            </if>
+            <if test="releaseDateStr!=null and releaseDateStr!=''">
+                AND DATE_FORMAT(releaseDate,'%Y年%m月') =#{releaseDateStr}
+            </if>
+        </where>
+
+        ORDER BY releaseDate DESC
+        <if test="start!=null and size!=null">
+            LIMIT #{start},#{size}
+        </if>
+    </select>
+    <select id="getTotal" parameterType="Map" resultType="Long">
+        SELECT count(*)FROM t_blog
+        <where>
+            <if test="cataId!=null and cataId!=''">
+                AND cataId = #{cataId}
+            </if>
+            <if test="releaseDateStr!=null and releaseDateStr!=''">
+                AND DATE_FORMAT(releaseDate,'%Y年%m月') =#{releaseDateStr}
+            </if>
+        </where>
+    </select>
+    <select id="findById"  parameterType="Integer" resultMap="BlogResult">
+SELECT * FROM t_blog WHERE id=#{id}
+    </select>
+    <update id="update" parameterType="Blog">
+        UPDATE t_blog
+        <set>
+            <if test="title!=null and title!=''">
+                title=#{title},
+            </if>
+            <if test="summary!=null and summary!=''">
+                summary=#{summary},
+            </if>
+            <if test="content!=null and content!=''">
+                content=#{content},
+            </if>
+            <if test="catalog.id!=null">
+                cataId=#{catalog.id},
+            </if>
+            <if test="tag!=null and tag!=''">
+                tag=#{tag},
+            </if>
+            <if test="clickHit!=null">
+                clickHit=#{clickHit},
+            </if>
+        </set>
+        WHERE id=#{id}
+    </update>
+    <insert id="add" parameterType="Blog">
+        INSERT INTO t_blog VALUES (NULL ,#{title},#{summary},now(),0,0,#{content},#{tag},#{catalog.id})
+    </insert>
+
+    <delete id="delete" parameterType="Integer">
+        DELETE FROM t_blog WHERE id=#{id}
+    </delete>
+    <select id="getCatalogById" parameterType="Integer" resultType="Integer">
+        select count(*) from t_blog where cataId=#{cataId}
+    </select>
+</mapper>
